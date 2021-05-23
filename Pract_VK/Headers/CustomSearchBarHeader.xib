@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="CustomSearchBarHeader" customModule="Pract_VK" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="327" height="40"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qX1-kC-UBm" userLabel="cancelButton">
+                    <rect key="frame" x="292" y="6" width="29" height="29"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="qX1-kC-UBm" secondAttribute="height" multiplier="1:1" id="IIY-8I-yDC"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="23"/>
+                    <color key="tintColor" systemColor="labelColor"/>
+                    <state key="normal">
+                        <imageReference key="image" image="cancel-sign" symbolScale="large"/>
+                    </state>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="q6P-pv-bid" userLabel="searchButton">
+                    <rect key="frame" x="6" y="6" width="29" height="29"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="q6P-pv-bid" secondAttribute="height" multiplier="1:1" id="U1F-yS-yaP"/>
+                    </constraints>
+                    <color key="tintColor" systemColor="labelColor"/>
+                    <state key="normal" image="search_icon">
+                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="small"/>
+                    </state>
+                </button>
+                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="zg4-Ov-N6v" userLabel="searchTextField">
+                    <rect key="frame" x="37" y="3" width="251" height="34"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits"/>
+                    <connections>
+                        <action selector="searchTextFieldEdited:" destination="iN0-l3-epB" eventType="editingDidEnd" id="PHl-o0-B2c"/>
+                    </connections>
+                </textField>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="q6P-pv-bid" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="6" id="3Cl-NW-vib"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="qX1-kC-UBm" secondAttribute="trailing" constant="6" id="3sT-ZS-NBq"/>
+                <constraint firstItem="zg4-Ov-N6v" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="5Pk-Xz-VZ7"/>
+                <constraint firstItem="qX1-kC-UBm" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="6" id="5o8-sq-Td8"/>
+                <constraint firstItem="qX1-kC-UBm" firstAttribute="leading" secondItem="zg4-Ov-N6v" secondAttribute="trailing" constant="4" id="Ljf-3g-s5P"/>
+                <constraint firstItem="q6P-pv-bid" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="6" id="RFo-Z1-z7M"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="q6P-pv-bid" secondAttribute="bottom" constant="5" id="ndz-F1-RLk"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="bottom" secondItem="qX1-kC-UBm" secondAttribute="bottom" constant="5" id="pth-T1-U1S"/>
+                <constraint firstItem="zg4-Ov-N6v" firstAttribute="leading" secondItem="q6P-pv-bid" secondAttribute="trailing" constant="2" id="t9c-AX-Uvt"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="cancelButton" destination="qX1-kC-UBm" id="dOX-It-Oc4"/>
+                <outlet property="searchButton" destination="q6P-pv-bid" id="QPU-IO-H9p"/>
+                <outlet property="searchTextField" destination="zg4-Ov-N6v" id="lg7-v9-Xi5"/>
+            </connections>
+            <point key="canvasLocation" x="-7.9710144927536239" y="-243.75"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="cancel-sign" width="506.5" height="506.5"/>
+        <image name="search_icon" width="500" height="505"/>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
