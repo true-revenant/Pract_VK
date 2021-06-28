@@ -6,14 +6,11 @@
 //
 
 import UIKit
-import RealmSwift
 
 class PhotosViewInteractiveAnimationController: UIViewController {
     
-    //var photos = [Photo]()
-    var photos: List<Photo>?
-    var token: NotificationToken?
-    
+    var photos: [Photo]?
+
     private var swipeDirection : SwipeDirection = .none
     private var currPhotoImageView = UIImageView()
     private var prevPhotoImageView = UIImageView()
@@ -50,22 +47,19 @@ class PhotosViewInteractiveAnimationController: UIViewController {
     
     deinit {
         print("PhotosViewController DEINIT!")
-        token?.invalidate()
+        //token?.invalidate()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        do {
-            photos = try RealmManager.instance.loadPhotosFromRealm()
-        }
-        catch { print(error) }
+        photos = VKNetworkManager.instance.photos
     }
     
     override func viewWillAppear(_ animated: Bool) {
         print("FriendsViewController WILL APPEAR!")
         super.viewWillAppear(animated)
-        photosSubscribe()
+        //photosSubscribe()
     }
     
     @IBAction func imageViewTapped() {
@@ -80,26 +74,7 @@ class PhotosViewInteractiveAnimationController: UIViewController {
             self.view.removeGestureRecognizer(self.photoImageTapRecognizer)
         })
     }
-    
-    private func photosSubscribe() {
-        
-        token = photos?.observe { [weak self] changes in
-            
-            guard let cV = self?.collectionView else { return }
-            
-            switch changes {
-                case .initial:
-                    cV.reloadData()
-                case .update(_, let deletions, let insertions, let updates):
-                    cV.insertItems(at: insertions.map({ IndexPath(item: $0, section: 0) }))
-                    cV.deleteItems(at: deletions.map({ IndexPath(item: $0, section: 0) }))
-                    cV.reloadItems(at: updates.map({ IndexPath(item: $0, section: 0) }))
-                case .error(let error):
-                    print(error)
-            }
-        }
-    }
-    
+      
     private func initPhotoImageView(index: Int) {
         
         //currPhotoImageView = UIImageView(image: photos[index])

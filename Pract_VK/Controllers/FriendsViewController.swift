@@ -6,16 +6,16 @@
 //
 
 import UIKit
-import RealmSwift
 
 class FriendsViewController: UIViewController {
 
     // MARK: - FIELDS
 
-    let reuseHeaderID = "FriendsHeader"
+    var friendsList: [Friend]?
+    var selectedFriend: Friend!
+    var friendsBySections = [[Friend]]()
     
-    var tokens = [NotificationToken]()
-    var token: NotificationToken?
+    let reuseHeaderID = "FriendsHeader"
     
     @IBOutlet weak var tableView: UITableView! {
         didSet{
@@ -32,19 +32,18 @@ class FriendsViewController: UIViewController {
         tableView.scrollToRow(at: IndexPath(row: 0, section: letterSearchControl.letters.firstIndex() { $0 == Character(sender.selectedLetter) }! ), at: .bottom, animated: true)
     }
     
-    var friendsList: Results<Friend>?
-    var selectedFriend: Friend!
-    var friendsBySections = [Results<Friend>]()
-    
     // MARK: - PRIVATE METHODS
     
     // Инициализируем массив уникальных первых букв фамилий всех друзей в SearchFriendControl
     private func initLetterArray() {
         guard let fListArr = friendsList else { return }
         
-        let firstLetters = fListArr.map() { return $0.firstName.uppercased().first! }
+        let firstLetters = fListArr.map() {
+            return $0.firstName.uppercased().first!
+        }
         
         letterSearchControl.letters.removeAll()
+        
         for l in firstLetters {
             if !letterSearchControl.letters.contains(l) {
                 letterSearchControl.letters.append(l)
@@ -55,78 +54,55 @@ class FriendsViewController: UIViewController {
         print(letterSearchControl.letters)
     }
     
-    private func friendsSectionsChangeSubscribe() {
-
-        for i in 0...friendsBySections.count - 1 {
-            
-            let sectToken = friendsBySections[i].observe { [weak self] changes in
-                
-                guard let tV = self?.tableView else { return }
-                
-                switch changes {
-                    case .initial:
-                        tV.reloadData()
-                    case .update(let results, let deletions, let insertions, let updates):
-                        tV.beginUpdates()
-                        tV.insertRows(at: insertions.map({ IndexPath(item: $0, section: i) }), with: .automatic)
-                        // Удаляем секцию если из нее была удалена последняя строка
-                        if results.isEmpty {
-                            tV.deleteSections(IndexSet([i]), with: .automatic)
-                        }
-                        else {
-                            tV.deleteRows(at: deletions.map({ IndexPath(item: $0, section: i) }), with: .automatic)
-                        }
-                        tV.reloadRows(at: updates.map({ IndexPath(item: $0, section: i) }), with: .automatic)
-                        tV.endUpdates()
-                    case .error(let error):
-                        print(error)
-                }
-            }
-            tokens.append(sectToken)
+    private func initFriendsBySections() {
+        
+        for letter in letterSearchControl.letters {
+            friendsBySections.append(getFriendsByFirstLastNameLetter(firstChar: letter))
         }
     }
     
-    private func initFriendsBySections() {
-        do {
-            let realm = try Realm()
-            for letter in letterSearchControl.letters {
-                
-                let friendsOneSection = realm.objects(Friend.self).filter("firstName BEGINSWITH %@", String(letter))
-                
-                friendsBySections.append(friendsOneSection)
+    private func getFriendsByFirstLastNameLetter(firstChar: Character) -> [Friend] {
+        
+        var currList = [Friend]()
+        
+        guard let fList = friendsList else { return currList }
+        
+        for friend in fList {
+            if (friend.lastName.first == firstChar) {
+                currList.append(friend)
             }
         }
-        catch { print(error) }
+        
+        return currList
     }
     
     // MARK: - OVERRIDEN METHODS
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         tableView.register(UINib(nibName: "FriendsTableViewHeader", bundle: nil), forHeaderFooterViewReuseIdentifier: reuseHeaderID)
-
-        do {
-            friendsList = try RealmManager.instance.loadFromRealm()
-            initLetterArray()
-            letterSearchControl.initControl()
-            initFriendsBySections()
-        }
-        catch { print(error) }
+        
+        friendsList = VKNetworkManager.instance.friends
+        
+        initLetterArray()
+        letterSearchControl.initControl()
+        initFriendsBySections()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         print("FriendsViewController WILL APPEAR!")
         super.viewWillAppear(animated)
-        friendsSectionsChangeSubscribe()
+        //friendsSectionsChangeSubscribe()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         print("FriendsViewController WILL DISAPPEAR!")
         super.viewDidDisappear(animated)
-        for i in 0...tokens.count - 1 {
-            tokens[i].invalidate()
-        }
-        tokens.removeAll()
+//        for i in 0...tokens.count - 1 {
+//            tokens[i].invalidate()
+//        }
+//        tokens.removeAll()
     }
     
     // MARK: - Navigation
@@ -179,10 +155,9 @@ extension FriendsViewController : UITableViewDelegate, UITableViewDataSource {
         
         selectedFriend = friendsBySections[indexPath.section][indexPath.row]
         
-        RealmManager.instance.currentPhotoOwnerID = selectedFriend.id
-        VKNetworkManager.instance.getAllPhotos(userId: selectedFriend.id, {})
-        
-        self.performSegue(withIdentifier: "SegueFriendsToPhotos", sender: self)
+        VKNetworkManager.instance.getAllPhotos(userId: selectedFriend.id, { [weak self] in
+            self?.performSegue(withIdentifier: "SegueFriendsToPhotos", sender: self)
+        })
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
@@ -191,19 +166,18 @@ extension FriendsViewController : UITableViewDelegate, UITableViewDataSource {
             print("TABLE VIEW EDITING STYLE CALLED!!")
             
             if (friendsBySections[indexPath.section].count == 1) {
-                //удаляем из общего списка по полю ID
                 
-                RealmManager.instance.removeFromRealm(obj: friendsBySections[indexPath.section][indexPath.row])
-                
-                // удаляем текущую секцию
+                friendsBySections[indexPath.section].remove(at: indexPath.row)
                 friendsBySections.remove(at: indexPath.section)
-                initLetterArray()
                 
+                initLetterArray()
                 letterSearchControl.initControl()
             }
             else {
-                RealmManager.instance.removeFromRealm(obj: friendsBySections[indexPath.section][indexPath.row])
+                friendsBySections[indexPath.section].remove(at: indexPath.row)
             }
+            
+            tableView.reloadData()
         }
     }
     

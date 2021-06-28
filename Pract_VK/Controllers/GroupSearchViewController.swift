@@ -9,10 +9,10 @@ import UIKit
 
 class GroupSearchViewController: UIViewController {
 
-    private var searchGroups = [Group]()
+    private var searchGroups : [Group]?
     private var isSearch = false
     
-    var selectedGroup: Group?
+    var selectedGroup = Group()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,12 +31,12 @@ class GroupSearchViewController: UIViewController {
         print("Текст - \(sender.searchText)")
         isSearch = sender.searchText.isEmpty ? false : true
         if isSearch {
-            VKNetworkManager.instance.getSearchGroups(sender.searchText, {
-                self.searchGroups = VKNetworkManager.instance.searchGroups
-                self.tableView.reloadData()
+            VKNetworkManager.instance.getSearchGroups(sender.searchText, { [weak self] in
+                self?.searchGroups = VKNetworkManager.instance.searchGroups
+                self?.tableView.reloadData()
             })
         }
-        else { searchGroups.removeAll() }
+        else { searchGroups?.removeAll() }
         tableView.reloadData()
     }
 }
@@ -45,7 +45,7 @@ extension GroupSearchViewController : UITableViewDelegate, UITableViewDataSource
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if (!isSearch) { return 0 }
-        else { return searchGroups.count }
+        else { return searchGroups?.count ?? 0 }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -53,7 +53,7 @@ extension GroupSearchViewController : UITableViewDelegate, UITableViewDataSource
         else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "GroupCell", for: indexPath) as! GroupTableViewCell
                 
-            cell.configure(searchGroups[indexPath.row])
+            cell.configure(searchGroups?[indexPath.row])
     
             return cell
         }
@@ -67,7 +67,7 @@ extension GroupSearchViewController : UITableViewDelegate, UITableViewDataSource
         
         if isSearch {
             tableView.deselectRow(at: indexPath, animated: true)
-            selectedGroup = searchGroups[indexPath.row]
+            selectedGroup = searchGroups![indexPath.row]
             performSegue(withIdentifier: "addGroup", sender: self)
         }
     }

@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import RealmSwift
 
 class PhotoResponse : Decodable {
     var response : PhotoList
@@ -16,9 +15,9 @@ class PhotoList : Decodable {
     var items : [Photo]
 }
 
-class Photo : Object, Decodable {
+class Photo : Decodable {
     
-    override var description: String {
+    var description: String {
         return "id: \(id)     likes: \(likes)"
     }
     

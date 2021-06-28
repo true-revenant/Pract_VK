@@ -6,26 +6,85 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class LoginViewController: UIViewController {
 
     @IBOutlet weak var login: UITextField!
     @IBOutlet weak var password: UITextField!
     @IBOutlet weak var scrollView: UIScrollView!
-    @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var ShowPassButton: UIButton!
     
     private var loadingPanel : UIView = UIView()
+    private var authHandle: AuthStateDidChangeListenerHandle!
+    
+    
+    @IBAction func SignUpButtonTapped(_ sender: UIButton) {
+        // Создаем окошко Алерт
+        let alert = UIAlertController(title: "Регистрация",
+                                          message: "Регистрация",
+                                          preferredStyle: .alert)
+        // Добавляем на алерт 2 текстовых поля
+        alert.addTextField { textEmail in
+                textEmail.placeholder = "Введите email"
+        }
+        alert.addTextField { textPassword in
+                textPassword.isSecureTextEntry = true
+                textPassword.placeholder = "Введите пароль"
+        }
+        alert.addTextField { textPassword in
+                textPassword.isSecureTextEntry = true
+                textPassword.placeholder = "Повторите пароль"
+        }
+        // Добавляем на алерт кнопку Отмены
+        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel)
 
-    @IBAction func Button_Tapped(_ sender: UIButton) {
-        
-        self.loadingPanel.alpha = 1
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-            if self.shouldPerformSegue(withIdentifier: "SegueFromLoginToMainBar_old", sender: self) {
-                self.performSegue(withIdentifier: "SegueFromLoginToMainBar_old", sender: self)
+        // Добавляем на алерт кнопку Сохранить
+        let saveAction = UIAlertAction(title: "Создать", style: .default) { _ in
+            
+            // Проверка если поля для регистрации заполнены
+                guard let emailField = alert.textFields?[0],
+                    let passwordField = alert.textFields?[1],
+                    let password = passwordField.text,
+                    let email = emailField.text else { return }
+            
+            // Проверка на совпадение паролей
+            if alert.textFields?[1].text != alert.textFields?[2].text {
+                self.showErrorMessageBox(message: "Пароли не совпадают!")
+                return
             }
-            self.loadingPanel.alpha = 0
-        })
+            
+            // Создаем пользователя в Firebase Auth
+            Auth.auth().createUser(withEmail: email, password: password) { [weak self] user, error in
+                if let error = error {
+                    self?.showErrorMessageBox(message: error.localizedDescription)
+                }
+                else {
+                    // Если создание прошло успешно, то регистрируемся под этой учеткой
+                    Auth.auth().signIn(withEmail: email, password: password)
+                }
+            }
+        }
+        // Добавляем кнопки на Алерт
+        alert.addAction(saveAction)
+        alert.addAction(cancelAction)
+        present(alert, animated: true, completion: nil)
+    }
+    
+    
+    @IBAction func loginButtonTaped(_ sender: UIButton) {
+        // Проверка на заполнение логина и пароля
+        guard let email = login.text, let password = password.text,
+          email.count > 0, password.count > 0 else {
+            self.showErrorMessageBox(message: "Логин и пароль не введены!")
+            return
+        }
+        // Если все ок, то логинимся под этим пользователем
+        Auth.auth().signIn(withEmail: email, password: password) { [weak self] user, error in
+            if let error = error, user == nil {
+              self?.showErrorMessageBox(message: error.localizedDescription)
+            }
+        }
     }
     
     @IBAction func ShowPassButtonDown(_ sender: UIButton) {
@@ -38,21 +97,9 @@ class LoginViewController: UIViewController {
         password.isSecureTextEntry = true
     }
     
-    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
-        if identifier == "SegueFromLoginToMainBar" {
-            if login.text == "admin" && password.text == "123456" { return true }
-            else {
-                print("Неверные логин и пароль!")
-                showErrorMessageBox()
-                return false
-            }
-        }
-        else { return false }
-    }
-    
     // Вывод окна с ошибкой
-    private func showErrorMessageBox() {
-        let alert = UIAlertController(title: "Ошибка", message: "Неверный логин и пароль", preferredStyle: .alert)
+    private func showErrorMessageBox(message: String) {
+        let alert = UIAlertController(title: "Ошибка", message: message, preferredStyle: .alert)
         
         let ok = UIAlertAction(title: "OK", style: .destructive, handler: nil)
         alert.addAction(ok)
@@ -60,11 +107,21 @@ class LoginViewController: UIViewController {
     }
     
     @IBAction func UnwindToLoginView(unwindSegue: UIStoryboardSegue) {
-        login.text = ""
-        password.text = ""
+        
+        do {
+            // Разлогиниваемся в AuthFirebase
+            try Auth.auth().signOut()
+            //self.dismiss(animated: true, completion: nil)
+            login.text = ""
+            password.text = ""
+        }
+        catch (let error)
+        {
+            print("Ошибка при выходе из системы: \(error)")
+        }
     }
     
-    // MARK: - Конструкторы
+    // MARK: - Методы цикла жизни View
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -75,24 +132,44 @@ class LoginViewController: UIViewController {
         super.viewWillAppear(animated)
         print("viewWillAppear(animated) called")
         
-        // Подписываемся на два уведомления: одно приходит при появлении клавиатуры
+        keyboardSubscribe()
+        authListenerSubscribe()
+    }
+    
+    private func keyboardSubscribe() {
+        // Подписываемся на нотификатор о появлении и исчезновении клавиатуры
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWasShown), name: UIResponder.keyboardWillShowNotification, object: nil)
         // Второе — когда она пропадает
         NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillBeHidden(notification:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
+    private func keyboardUnsubscribe() {
+        // Отписываемся от нотификатора о появлении или исчезновении клавиатуры
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    private func authListenerSubscribe() {
+        self.authHandle = Auth.auth().addStateDidChangeListener { auth, user in
+            if user != nil {
+                self.performSegue(withIdentifier: "SegueFromLoginToMainBar", sender: nil)
+                self.login.text = ""
+                self.password.text = ""
+            }
+        }
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         initLoadingPanel()
-        initShowPassButton()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         print("viewWillDisappear(animated) called")
-    
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        Auth.auth().removeStateDidChangeListener(authHandle)
+        keyboardUnsubscribe()
     }
     
     // Когда клавиатура появляется
@@ -115,12 +192,12 @@ class LoginViewController: UIViewController {
     }
         
     private func initLoadingPanel() {
-        loadingPanel = UIView(frame: CGRect(x: password.frame.origin.x, y: password.frame.origin.y + 100, width: password.bounds.width, height: 30))
+        loadingPanel = UIView(frame: CGRect(x: password.frame.origin.x, y: password.frame.origin.y + 30, width: password.bounds.width, height: 30))
         loadingPanel.backgroundColor = .clear
         loadingPanel.alpha = 0
         view.addSubview(loadingPanel)
         view.layoutSubviews()
-        
+         
         let dot_center = UIView(frame: CGRect(x: loadingPanel.bounds.midX - 10, y: loadingPanel.bounds.midY - 10, width: 20, height: 20))
         dot_center.layer.cornerRadius = 10
         dot_center.clipsToBounds = true
@@ -159,12 +236,5 @@ class LoginViewController: UIViewController {
     private func removeLoadingPanel() {
         loadingPanel.removeFromSuperview()
         loadingPanel = UIView()
-    }
-    
-    private func initShowPassButton() {
-        //ShowPassButton.setTitle("123", for: .normal)
-        
-//        ShowPassButton.setImage(UIImage(named: "arrowtriangle.forward.circle"), for: .normal)
-//        ShowPassButton.setImage(UIImage(named: "arrowtriangle.right.circle.fill"), for: .selected)
     }
 }
