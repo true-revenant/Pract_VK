@@ -6,34 +6,29 @@
 //
 
 import UIKit
-import RealmSwift
+import FirebaseFirestore
 
 class GroupsViewController: UITableViewController, UISearchBarDelegate {
 
-    private var groups: Results<Group>!
-    private var token: NotificationToken?
-    
-    private var searchGroups: Results<Group>!
+    private var groups: [Group]?
+
+    private var searchGroups: [Group]?
     private var isSearch = false
     private let reuseHeaderID = "GroupSearchHeader"
     
-    private func initSearchGroups(_ str: String) throws -> Results<Group> {
-        
-        let realm = try Realm()
-        
-        let _searchGroups = realm.objects(Group.self).filter("name CONTAINS %@ OR name CONTAINS %@ OR name CONTAINS %@", str.lowercased(), str.uppercased(), str)
-        
-        return _searchGroups
-    }
+//    private func initSearchGroups(_ str: String) throws -> [Group] {
+//
+//        return _searchGroups
+//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        VKNetworkManager.instance.getGroups {}
+        VKNetworkManager.instance.getGroups { [weak self] in
+            self?.groups = VKNetworkManager.instance.groups
+            self?.tableView.reloadData()
+        }
         
-        do { groups = try RealmManager.instance.loadFromRealm() }
-        catch { print(error.localizedDescription) }
-
         print("Groups initialized!")
         
         self.tableView.register(UINib(nibName: "GroupsTableViewSearchHeader", bundle: nil), forHeaderFooterViewReuseIdentifier: self.reuseHeaderID)
@@ -42,34 +37,11 @@ class GroupsViewController: UITableViewController, UISearchBarDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         print("GroupsViewController WILL APPEAR!")
-        
-        groupsChangeSubscribe(groups)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         print("GroupsViewController WILL DISAPPEAR!")
-        token?.invalidate()
-    }
-
-    private func groupsChangeSubscribe(_ groups: Results<Group>) {
-        token = groups.observe { [weak self] changes in
-            
-            guard let tV = self?.tableView else { return }
-            
-            switch changes {
-                case .initial:
-                    tV.reloadData()
-                case .update(_, let deletions, let insertions, let updates):
-                    tV.beginUpdates()
-                    tV.insertRows(at: insertions.map({ IndexPath(row: $0, section: 0) }), with: .automatic)
-                    tV.deleteRows(at: deletions.map({ IndexPath(row: $0, section: 0) }), with: .automatic)
-                    tV.reloadRows(at: updates.map({ IndexPath(row: $0, section: 0) }), with: .automatic)
-                    tV.endUpdates()
-                case .error(let error):
-                    print(error)
-            }
-        }
     }
     
     @IBAction func SearchButton_Tapped(_ sender: UIBarButtonItem) {
@@ -80,10 +52,8 @@ class GroupsViewController: UITableViewController, UISearchBarDelegate {
     @IBAction func addGroup(segue: UIStoryboardSegue) {
         if segue.identifier == "addGroup", let source = segue.source as? GroupSearchViewController {
             
-            do {
-                try RealmManager.instance.addNewGroupToRealm(g: source.selectedGroup!)
-            }
-            catch { print(error) }
+            FirestoreManager.saveGroupToFirestore(source.selectedGroup, CurrentSession.instance.userID)
+            
         }
     }
     
@@ -95,8 +65,8 @@ class GroupsViewController: UITableViewController, UISearchBarDelegate {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if (!isSearch) { return groups.count }
-        else { return searchGroups.count }
+        if (!isSearch) { return groups?.count ?? 0}
+        else { return searchGroups?.count ?? 0 }
     }
 
     // MARK: - TABLE VIEW DELEGATES
@@ -105,14 +75,14 @@ class GroupsViewController: UITableViewController, UISearchBarDelegate {
         if (!isSearch) {
             let cell = tableView.dequeueReusableCell(withIdentifier: "GroupCell", for: indexPath) as! GroupTableViewCell
 
-            cell.configure(groups[indexPath.row])
+            cell.configure(groups?[indexPath.row])
             
             return cell
         }
         else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "GroupCell", for: indexPath) as! GroupTableViewCell
 
-            cell.configure(searchGroups[indexPath.row])
+            cell.configure(searchGroups?[indexPath.row])
             
             return cell
         }
@@ -140,10 +110,10 @@ class GroupsViewController: UITableViewController, UISearchBarDelegate {
         if editingStyle == .delete {
             
             if !isSearch {
-                RealmManager.instance.removeFromRealm(obj: groups![indexPath.row])
+                //RealmManager.instance.removeFromRealm(obj: groups![indexPath.row])
             }
             else {
-                RealmManager.instance.removeFromRealm(obj: searchGroups[indexPath.row])
+                //RealmManager.instance.removeFromRealm(obj: searchGroups[indexPath.row])
             }
         }
     }
@@ -153,18 +123,16 @@ class GroupsViewController: UITableViewController, UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         
         isSearch = false
-        groupsChangeSubscribe(groups)
-        
+
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         isSearch = searchText.isEmpty ? false : true
         if isSearch {
-            searchGroups = try? initSearchGroups(searchText)
-            groupsChangeSubscribe(searchGroups)
+//            searchGroups = try? initSearchGroups(searchText)
+//            groupsChangeSubscribe(searchGroups)
         }
         else {
-            groupsChangeSubscribe(groups)
             tableView.reloadData()
         }
     }

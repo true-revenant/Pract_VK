@@ -7,11 +7,13 @@
 
 import Foundation
 import Alamofire
-import RealmSwift
 
 class VKNetworkManager {
     
-    var searchGroups = [Group]()
+    var friends : [Friend]?
+    var photos : [Photo]?
+    var groups: [Group]?
+    var searchGroups : [Group]?
     
     private init() {}
     private let baseURL = "api.vk.com"
@@ -81,7 +83,7 @@ class VKNetworkManager {
 //        request.httpMethod = "GET"
         
         //runGetRequest()
-        runGetRequestAF(q: .photos, nil)
+        runGetRequestAF(q: .photos, completion)
     }
 
     func getGroups(_ completion: @escaping () -> Void) {
@@ -167,23 +169,19 @@ class VKNetworkManager {
                 switch q {
                 case .friends:
                     
-                    let items = try JSONDecoder().decode(FriendsResponse.self, from: data).response.items
-                    try RealmManager.instance.saveToRealm(arr: items)
+                    self.friends = try JSONDecoder().decode(FriendsResponse.self, from: data).response.items
                     
                 case .photos:
                     
-                    let items = try JSONDecoder().decode(PhotoResponse.self, from: data).response.items
-                    try RealmManager.instance.savePhotosToRealm(friendID: RealmManager.instance.currentPhotoOwnerID, phArray: items)
+                    self.photos = try JSONDecoder().decode(PhotoResponse.self, from: data).response.items
                     
                 case .groups:
                     
-                    let items = try JSONDecoder().decode(GroupsResponse.self, from: data).response.items
-                    try RealmManager.instance.saveToRealm(arr: items)
+                    self.groups = try JSONDecoder().decode(GroupsResponse.self, from: data).response.items
                     
                 case .searchGroups:
                     
-                    let items = try JSONDecoder().decode(GroupsResponse.self, from: data).response.items
-                    self.searchGroups = items
+                    self.searchGroups = try JSONDecoder().decode(GroupsResponse.self, from: data).response.items
                 
                 case .newsfeed:
                     

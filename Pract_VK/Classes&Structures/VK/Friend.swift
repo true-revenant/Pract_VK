@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import RealmSwift
 
 class FriendsResponse : Decodable {
     let response : FriendsList
@@ -16,9 +15,9 @@ class FriendsList : Decodable {
     let items : [Friend]
 }
 
-class Friend : Object, Decodable {
+class Friend : Decodable {
     
-    override var description: String {
+    var description: String {
         return "\(id)   \(firstName)    \(lastName)     \(sex ?? Sex.Unknown)"
     }
     
@@ -31,11 +30,11 @@ class Friend : Object, Decodable {
     @objc dynamic var photoAddress = ""
     @objc dynamic var city : String? = ""
     
-    let photos = List<Photo>()
-    
-    override static func primaryKey() -> String? {
-        return "id"
-    }
+//    let photos = List<Photo>()
+//
+//    override static func primaryKey() -> String? {
+//        return "id"
+//    }
     
     enum CodingKeys: String, CodingKey {
         case id

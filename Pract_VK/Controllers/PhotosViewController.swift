@@ -6,12 +6,11 @@
 //
 
 import UIKit
-import RealmSwift
 
 class PhotosViewController: UIViewController {
 
-    //var photos = [Photo]()
-    var photos: Results<Photo>?
+    var photos : [Photo]?
+    //var photos: Results<Photo>?
     
     private var currPhotoImageView = UIImageView()
     private var selectedPhotoIndex  = 0
@@ -45,13 +44,10 @@ class PhotosViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        do {
-            photos = try RealmManager.instance.loadFromRealm()
-        }
-        catch { print(error) }
+        photos = VKNetworkManager.instance.photos
     }
     
-
+    
     /*
     // MARK: - Navigation
 

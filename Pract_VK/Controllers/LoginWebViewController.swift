@@ -7,9 +7,14 @@
 
 import UIKit
 import WebKit
+import FirebaseDatabase
+import FirebaseAuth
 
 class LoginWebViewController: UIViewController {
 
+    private var vkUsers = [FirebaseVKUser]()
+    private let ref = Database.database().reference(withPath: "vkUsers")
+    
     @IBOutlet weak var webView: WKWebView! {
         didSet {
             webView.navigationDelegate = self
@@ -25,34 +30,32 @@ class LoginWebViewController: UIViewController {
         initLoginForm()
     }
     
+    private func saveUserIDtoFirebase(_id: String) {
+        
+        let user = FirebaseVKUser(id: _id)
+        let userRef = self.ref.child(_id)
+        
+        userRef.setValue(user.toAnyObject())
+    }
+    
     private func initLoginForm() {
         var urlComponents = URLComponents()
-                urlComponents.scheme = "https"
-                urlComponents.host = "oauth.vk.com"
-                urlComponents.path = "/authorize"
-                urlComponents.queryItems = [
-                    URLQueryItem(name: "client_id", value: "7837658"),
-                    URLQueryItem(name: "display", value: "mobile"),
-                    URLQueryItem(name: "redirect_uri", value: "https://oauth.vk.com/blank.html"),
-                    URLQueryItem(name: "scope", value: "262150"),
-                    URLQueryItem(name: "response_type", value: "token"),
-                    URLQueryItem(name: "v", value: "5.130")
-                ]
-                
-                let request = URLRequest(url: urlComponents.url!)
-                
-                webView.load(request)
+        urlComponents.scheme = "https"
+        urlComponents.host = "oauth.vk.com"
+        urlComponents.path = "/authorize"
+        urlComponents.queryItems = [
+            URLQueryItem(name: "client_id", value: "7837658"),
+            URLQueryItem(name: "display", value: "mobile"),
+            URLQueryItem(name: "redirect_uri", value: "https://oauth.vk.com/blank.html"),
+            URLQueryItem(name: "scope", value: "262150"),
+            URLQueryItem(name: "response_type", value: "token"),
+            URLQueryItem(name: "v", value: "5.130")
+        ]
+        
+        let request = URLRequest(url: urlComponents.url!)
+        
+        webView.load(request)
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 }
 
 extension LoginWebViewController : WKNavigationDelegate {
@@ -79,6 +82,9 @@ extension LoginWebViewController : WKNavigationDelegate {
         CurrentSession.instance.token = params["access_token"] ?? ""
         CurrentSession.instance.userID = params["user_id"] ?? ""
         
+        // Сохраняем ID в Firebase
+        saveUserIDtoFirebase(_id: CurrentSession.instance.userID)
+        
         print("Session access token: \(CurrentSession.instance.token)")
         print("Session user ID: \(CurrentSession.instance.userID)")
         
@@ -89,8 +95,7 @@ extension LoginWebViewController : WKNavigationDelegate {
         decisionHandler(.cancel)
         
         VKNetworkManager.instance.getFriends() {
-            self.performSegue(withIdentifier: "SegueFromLoginToMainBar", sender: self)
+            self.performSegue(withIdentifier: "SegueFromWebLoginToMainBar", sender: self)
         }
-        
     }
 }

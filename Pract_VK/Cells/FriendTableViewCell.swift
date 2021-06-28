@@ -35,7 +35,7 @@ class FriendTableViewCell: UITableViewCell {
         self.friendName.text = "\(f.firstName) \(f.lastName)"
         //self.AvatarPhoto.image = UIImage(named: "friend_1")
         
-        self.AvatarPhoto.kf.setImage(with: URL(string: f.photoAddress), placeholder: nil, options: [.cacheOriginalImage], completionHandler: nil)
-        //self.AvatarPhoto.kf.setImage(with: URL(string: f.photoAddress))
+//        self.AvatarPhoto.kf.setImage(with: URL(string: f.photoAddress), placeholder: nil, options: [.cacheOriginalImage], completionHandler: nil)
+        self.AvatarPhoto.kf.setImage(with: URL(string: f.photoAddress))
     }
 }

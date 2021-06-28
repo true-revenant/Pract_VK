@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import RealmSwift
 
 class GroupsResponse : Decodable {
     var response : GroupsList
@@ -16,9 +15,9 @@ class GroupsList : Decodable {
     var items : [Group]
 }
 
-class Group : Object, Decodable {
+class Group : Decodable {
     
-    override var description: String {
+    var description: String {
         return "\(id)     \(name)     \(groupDescr)"
     }
     
@@ -31,9 +30,9 @@ class Group : Object, Decodable {
     @objc dynamic var membersСount = 0
     @objc dynamic var photoAddress = ""
     
-    override static func primaryKey() -> String? {
-        return "id"
-    }
+//    override static func primaryKey() -> String? {
+//        return "id"
+//    }
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -43,6 +42,20 @@ class Group : Object, Decodable {
         case isClosed = "is_closed"
         case membersСount = "members_count"
         case photoAddress = "photo_100"
+    }
+    
+    func toFiresrore(userId: String) -> [String: Any] {
+        return [
+            "VKUserID" : userId,
+            "Title" : name,
+            "Description" : groupDescr,
+            "IsClosed" : isClosed,
+            "MembersCount" : membersСount
+        ]
+    }
+    
+    private func saveToFirestore() {
+        
     }
     
     convenience required init(from decoder: Decoder) throws {
@@ -80,8 +93,3 @@ enum GroupType : String, Decodable {
     case page
     case event
 }
-
-//struct Group {
-//    var name : String
-//    var avatarImage : UIImage
-//}
