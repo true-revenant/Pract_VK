@@ -130,8 +130,10 @@ class VKNetworkManager {
         
         urlConstructor.queryItems = [
             URLQueryItem(name: "access_token", value: CurrentSession.instance.token),
-            URLQueryItem(name: "filters", value: "post,photo, note"),
+            URLQueryItem(name: "filters", value: "post,photo,note"),
             URLQueryItem(name: "max_photos", value: "100"),
+            URLQueryItem(name: "return_banned", value: "0"),
+            URLQueryItem(name: "count", value: "50"),
             URLQueryItem(name: "v", value: "5.130")
         ]
         

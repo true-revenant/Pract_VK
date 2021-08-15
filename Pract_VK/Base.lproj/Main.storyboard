@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="tNZ-Ue-Pyo">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="tNZ-Ue-Pyo">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -182,7 +182,7 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="blue" indentationWidth="10" reuseIdentifier="FriendCell" rowHeight="100" id="ppJ-Ch-Y1X" customClass="FriendTableViewCell" customModule="Pract_VK" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="385" height="100"/>
+                                        <rect key="frame" x="0.0" y="24.5" width="385" height="100"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ppJ-Ch-Y1X" id="MDq-K4-Xvd">
                                             <rect key="frame" x="0.0" y="0.0" width="385" height="100"/>
@@ -436,6 +436,7 @@
                         <segue destination="etn-mu-pJO" kind="relationship" relationship="viewControllers" id="L8H-Qx-3RF"/>
                         <segue destination="5JF-nW-G4T" kind="relationship" relationship="viewControllers" id="11e-UY-o7u"/>
                         <segue destination="jHB-MK-XNT" kind="relationship" relationship="viewControllers" id="ES8-kC-3AP"/>
+                        <segue destination="hKd-FP-doL" kind="relationship" relationship="viewControllers" id="1Ne-tm-EQD"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="yIi-dS-Gdz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -452,7 +453,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="blue" indentationWidth="10" reuseIdentifier="GroupCell" rowHeight="100" id="RRr-Dm-Jcg" customClass="GroupTableViewCell" customModule="Pract_VK" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="28" width="414" height="100"/>
+                                <rect key="frame" x="0.0" y="24.5" width="414" height="100"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="RRr-Dm-Jcg" id="hCh-mi-nkj">
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="100"/>
@@ -544,7 +545,7 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="blue" indentationWidth="10" reuseIdentifier="GroupCell" rowHeight="100" id="cZv-XS-GsD" customClass="GroupTableViewCell" customModule="Pract_VK" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="28" width="414" height="100"/>
+                                        <rect key="frame" x="0.0" y="24.5" width="414" height="100"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="cZv-XS-GsD" id="UvR-dW-G0O">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="100"/>
@@ -634,6 +635,44 @@
             </objects>
             <point key="canvasLocation" x="3550.7246376811595" y="-97.098214285714278"/>
         </scene>
+        <!--Новости V3-->
+        <scene sceneID="uUJ-uT-VxT">
+            <objects>
+                <viewController id="hKd-FP-doL" customClass="NewsPostV3ViewController" customModule="Pract_VK" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="leX-nf-R4R">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="yD0-zd-kmC">
+                                <rect key="frame" x="0.0" y="44" width="414" height="769"/>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="8" minimumInteritemSpacing="8" id="a6v-gK-8Ow">
+                                    <size key="itemSize" width="128" height="128"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells/>
+                            </collectionView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="y9L-1F-nXM"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="yD0-zd-kmC" firstAttribute="top" secondItem="y9L-1F-nXM" secondAttribute="top" id="HWK-4K-S3m"/>
+                            <constraint firstItem="yD0-zd-kmC" firstAttribute="leading" secondItem="y9L-1F-nXM" secondAttribute="leading" id="HcJ-qO-Tcu"/>
+                            <constraint firstItem="y9L-1F-nXM" firstAttribute="bottom" secondItem="yD0-zd-kmC" secondAttribute="bottom" id="g84-vv-upn"/>
+                            <constraint firstItem="y9L-1F-nXM" firstAttribute="trailing" secondItem="yD0-zd-kmC" secondAttribute="trailing" id="nfk-ot-XHQ"/>
+                        </constraints>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Новости V3" image="square.and.pencil" catalog="system" id="bke-RE-lgg"/>
+                    <connections>
+                        <outlet property="newsCollectionView" destination="yD0-zd-kmC" id="nYR-UA-hK2"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="yO9-CO-byY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-397" y="376"/>
+        </scene>
         <!--Новости-->
         <scene sceneID="VhL-3R-WqV">
             <objects>
@@ -670,7 +709,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ohD-oT-y4b" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="196" y="377"/>
+            <point key="canvasLocation" x="346" y="376"/>
         </scene>
         <!--Новости V2-->
         <scene sceneID="UCn-ZR-ACT">
@@ -739,6 +778,7 @@
         <image name="newspaper.fill" catalog="system" width="128" height="111"/>
         <image name="person.2" catalog="system" width="128" height="81"/>
         <image name="rectangle.stack.person.crop" catalog="system" width="128" height="122"/>
+        <image name="square.and.pencil" catalog="system" width="128" height="115"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
