@@ -37,7 +37,7 @@ class NewsPostCollectionViewCellV3: UICollectionViewCell, UICollectionViewDelega
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        
         newspostCollectionView.register(UINib(nibName: "NewsPostHeaderCell", bundle: nil), forCellWithReuseIdentifier: headerCellID)
         
         newspostCollectionView.register(UINib(nibName: "NewsPostMessageCell", bundle: nil), forCellWithReuseIdentifier: messageCellID)
@@ -79,19 +79,14 @@ class NewsPostCollectionViewCellV3: UICollectionViewCell, UICollectionViewDelega
                 
             case 3:
                 let cell = newspostCollectionView.dequeueReusableCell(withReuseIdentifier: bottomCellID, for: indexPath) as! NewsPostBottomCell
-                
+
                 cell.configure(likesCount: 10)
-                
+
                 return cell
             default:
                 return UICollectionViewCell()
         }
     }
-    
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-//
-//        return UIEdgeInsets(top: 3, left: 0, bottom: 3, right: 0)
-//    }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         

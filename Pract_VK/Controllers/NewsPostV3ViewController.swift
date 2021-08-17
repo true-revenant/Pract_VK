@@ -58,10 +58,12 @@ class NewsPostV3ViewController: UIViewController {
             NewsPost(avatarImage: UIImage(named: "friend_8")!, lastName: "Сатриани", firstName: "Джо", date: "28.03.2021", postText: "Всем привет! Я зарегался в ВК!", photos: post1_photos),
             NewsPost(avatarImage: UIImage(named: "friend_9")!, lastName: "Вай", firstName: "Стив", date: "28.03.2021", postText: "Всем привет! И я зарегался в ВК!", photos: post2_photos),
             NewsPost(avatarImage: UIImage(named: "friend_4")!, lastName: "Абази", firstName: "Тосин", date: "29.03.2021", postText: "Всем привет! Вчера сочинил трек в какой-то сумасшедшей размерности.. Как его играть теперь без понятия)) Очередной челлендж, прорвемся!)", photos: post3_photos),
-//            NewsPost(avatarImage: UIImage(named: "friend_1")!, lastName: "Джонстон", firstName: "Ник", date: "29.03.2021", postText: "Концерт был огонь! Увидимся через пару месяцев!"),
+            NewsPost(avatarImage: UIImage(named: "friend_1")!, lastName: "Джонстон", firstName: "Ник", date: "29.03.2021", postText: "Концерт был огонь! Увидимся через пару месяцев!"),
             NewsPost(avatarImage: UIImage(named: "friend_1")!, lastName: "Джонстон", firstName: "Ник", date: "30.03.2021", postText: "Погода кайф!", photos: post6_photos),
             NewsPost(avatarImage: UIImage(named: "friend_9")!, lastName: "Вай", firstName: "Стив", date: "30.03.2021", postText: "Зацените мою новую гитару, она шикарна!")
+            
         ]
+        
     }
     
     
@@ -93,6 +95,9 @@ extension NewsPostV3ViewController : UICollectionViewDelegate, UICollectionViewD
         
         cell.configure(name: "\(posts[indexPath.item].firstName) \(posts[indexPath.item].lastName)", date: posts[indexPath.item].date, postText: posts[indexPath.item].postText, avatarImg: posts[indexPath.item].avatarImage, photoImgs: posts[indexPath.item].photos)
         
+        print(indexPath.item)
+        print(posts[indexPath.item].postText)
+        
         return cell
     }
     
@@ -111,9 +116,4 @@ extension NewsPostV3ViewController : UICollectionViewDelegate, UICollectionViewD
         
         return CGSize(width: newsCollectionView.bounds.width, height: 585 - CGFloat(sectionOutset))
     }
-    
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-//
-//        return UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-//    }
 }

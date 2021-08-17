@@ -89,6 +89,9 @@ extension NewsV2ViewController : UICollectionViewDelegate, UICollectionViewDataS
         
         cell.configure(name: "\(posts[indexPath.item].firstName) \(posts[indexPath.item].lastName)", date: posts[indexPath.item].date, postText: posts[indexPath.item].postText, avatarImg: posts[indexPath.item].avatarImage, photoImgs: posts[indexPath.item].photos)
     
+        print(indexPath.item)
+        print(posts[indexPath.item].postText)
+        
         return cell
     }
     
