@@ -1,28 +1,31 @@
 //
-//  NewsV2ViewController.swift
+//  NewsPostV3ViewController.swift
 //  Pract_VK
 //
-//  Created by Сергей Бадасян on 29.03.2021.
+//  Created by Сергей Бадасян on 15.08.2021.
 //
 
 import UIKit
 
-class NewsV2ViewController: UIViewController {
+class NewsPostV3ViewController: UIViewController {
 
     private var posts = [NewsPost]()
-    private let reuseCellID = "NewsCell"
+    private let reuseCellID = "NewsPostCell"
     
-    @IBOutlet weak var collectionView: UICollectionView! {
+    @IBOutlet weak var newsCollectionView: UICollectionView! {
         didSet {
-            collectionView.delegate = self
-            collectionView.dataSource = self
+            newsCollectionView.delegate = self
+            newsCollectionView.dataSource = self
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        collectionView.register(UINib(nibName: "NewsPostV2CollectionViewCell", bundle: nil), forCellWithReuseIdentifier: reuseCellID)
+        newsCollectionView.register(UINib(nibName: "NewsPostCollectionViewCellV3", bundle: nil), forCellWithReuseIdentifier: reuseCellID)
+        print("NewsPostCollectionViewCellV3 registered!")
         initNewsPosts()
+        
+        VKNetworkManager.instance.getNewsfeed()
     }
     
     private func initNewsPosts() {
@@ -58,9 +61,12 @@ class NewsV2ViewController: UIViewController {
             NewsPost(avatarImage: UIImage(named: "friend_1")!, lastName: "Джонстон", firstName: "Ник", date: "29.03.2021", postText: "Концерт был огонь! Увидимся через пару месяцев!"),
             NewsPost(avatarImage: UIImage(named: "friend_1")!, lastName: "Джонстон", firstName: "Ник", date: "30.03.2021", postText: "Погода кайф!", photos: post6_photos),
             NewsPost(avatarImage: UIImage(named: "friend_9")!, lastName: "Вай", firstName: "Стив", date: "30.03.2021", postText: "Зацените мою новую гитару, она шикарна!")
+            
         ]
+        
     }
-
+    
+    
     /*
     // MARK: - Navigation
 
@@ -73,7 +79,7 @@ class NewsV2ViewController: UIViewController {
 
 }
 
-extension NewsV2ViewController : UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension NewsPostV3ViewController : UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
@@ -85,28 +91,29 @@ extension NewsV2ViewController : UICollectionViewDelegate, UICollectionViewDataS
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseCellID, for: indexPath) as! NewsPostV2CollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseCellID, for: indexPath) as! NewsPostCollectionViewCellV3
         
         cell.configure(name: "\(posts[indexPath.item].firstName) \(posts[indexPath.item].lastName)", date: posts[indexPath.item].date, postText: posts[indexPath.item].postText, avatarImg: posts[indexPath.item].avatarImage, photoImgs: posts[indexPath.item].photos)
-    
+        
         print(indexPath.item)
         print(posts[indexPath.item].postText)
         
         return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         
-        var cellHeight = CGFloat(580)
-        if posts[indexPath.item].photos.count == 0 {
-            //cellHeight -= posts[indexPath.item].postImage.size.height
-            cellHeight -= 350
-        }
-        
-        return CGSize(width: collectionView.bounds.width, height: cellHeight)
+        return 10
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 10
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        let sectionOutset = 0
+//        if (posts[indexPath.item].photos.count == 0) {
+//            sectionOutset = 300
+//        }
+//        else { sectionOutset = 0 }
+        
+        return CGSize(width: newsCollectionView.bounds.width, height: 585 - CGFloat(sectionOutset))
     }
 }

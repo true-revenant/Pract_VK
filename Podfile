@@ -10,7 +10,7 @@ target 'Pract_VK' do
   pod 'Alamofire', '~> 5.4'
   
   pod 'Kingfisher', '~> 6.3'
-
+  
   pod 'RealmSwift', '~> 10.7'
 
   target 'Pract_VKTests' do

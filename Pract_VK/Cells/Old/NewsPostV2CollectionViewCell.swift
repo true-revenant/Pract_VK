@@ -37,7 +37,6 @@ class NewsPostV2CollectionViewCell: UICollectionViewCell, UICollectionViewDelega
     override func awakeFromNib() {
         super.awakeFromNib()
         photosCollectionView.register(UINib(nibName: "NewsPostPhotoCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: reusePhotoCellID)
-        // Initialization code
     }
     
     override func prepareForReuse() {

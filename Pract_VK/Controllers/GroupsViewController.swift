@@ -33,7 +33,7 @@ class GroupsViewController: UITableViewController, UISearchBarDelegate {
         
         do { groups = try RealmManager.instance.loadFromRealm() }
         catch { print(error.localizedDescription) }
-
+        
         print("Groups initialized!")
         
         self.tableView.register(UINib(nibName: "GroupsTableViewSearchHeader", bundle: nil), forHeaderFooterViewReuseIdentifier: self.reuseHeaderID)

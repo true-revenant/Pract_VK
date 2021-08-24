@@ -30,6 +30,9 @@ class NewsViewController: UIViewController {
         posts = [
             NewsPost(avatarImage: UIImage(named: "friend_8")!, lastName: "Сатриани", firstName: "Джо", date: "28.03.2021", postText: "Всем привет! Я зарегался в ВК!", postImage: UIImage(named: "news_1")!),
             NewsPost(avatarImage: UIImage(named: "friend_9")!, lastName: "Вай", firstName: "Стив", date: "28.03.2021", postText: "Всем привет! И я зарегался в ВК!", postImage: UIImage(named: "news_2")!),
+            NewsPost(avatarImage: UIImage(named: "friend_4")!, lastName: "Абази", firstName: "Тосин", date: "29.03.2021", postText: "Всем привет! Вчера сочинил трек в какой-то сумасшедшей размерности.. Как его играть теперь без понятия)) Очередной челлендж, прорвемся!)", postImage: UIImage.init()),
+            NewsPost(avatarImage: UIImage(named: "friend_4")!, lastName: "Абази", firstName: "Тосин", date: "29.03.2021", postText: "Всем привет! Вчера сочинил трек в какой-то сумасшедшей размерности.. Как его играть теперь без понятия)) Очередной челлендж, прорвемся!)", postImage: UIImage.init()),
+            NewsPost(avatarImage: UIImage(named: "friend_4")!, lastName: "Абази", firstName: "Тосин", date: "29.03.2021", postText: "Всем привет! Вчера сочинил трек в какой-то сумасшедшей размерности.. Как его играть теперь без понятия)) Очередной челлендж, прорвемся!)", postImage: UIImage.init()),
             NewsPost(avatarImage: UIImage(named: "friend_4")!, lastName: "Абази", firstName: "Тосин", date: "29.03.2021", postText: "Всем привет! Вчера сочинил трек в какой-то сумасшедшей размерности.. Как его играть теперь без понятия)) Очередной челлендж, прорвемся!)", postImage: UIImage.init())
             
 //            Вчера сочинил трек в какой-то сумасшедшей размерности.. Как его играть теперь без понятия)) Очередной челлендж, прорвемся!)
@@ -62,7 +65,7 @@ extension NewsViewController : UICollectionViewDelegate, UICollectionViewDataSou
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseCellID, for: indexPath) as! NewsPostCollectionViewCell
         
         cell.configure(name: "\(posts[indexPath.item].firstName) \(posts[indexPath.item].lastName)", date: posts[indexPath.item].date, postText: posts[indexPath.item].postText, postImg: posts[indexPath.item].postImage, avatarImg: posts[indexPath.item].avatarImage)
-    
+        
         return cell
     }
     
