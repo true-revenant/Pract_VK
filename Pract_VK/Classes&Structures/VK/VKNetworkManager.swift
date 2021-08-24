@@ -12,8 +12,10 @@ import RealmSwift
 class VKNetworkManager {
     
     var searchGroups = [Group]()
+    var newsfeedPosts = [Newsfeed]()
     
     private init() {}
+    
     private let baseURL = "api.vk.com"
     private var urlConstructor = URLComponents()
     private var request : URLRequest!
@@ -21,6 +23,7 @@ class VKNetworkManager {
     static let instance = VKNetworkManager()
     
     private enum qType {
+        
         case friends
         case groups
         case photos
@@ -82,6 +85,7 @@ class VKNetworkManager {
         
         //runGetRequest()
         runGetRequestAF(q: .photos, nil)
+        print(self.urlConstructor.url!)
     }
 
     func getGroups(_ completion: @escaping () -> Void) {
@@ -122,7 +126,7 @@ class VKNetworkManager {
     }
     
     // NOT WORKING
-    func getNewsfeed() {
+    func getNewsfeed(_ completion: @escaping () -> Void) {
         
         urlConstructor.scheme = "https"
         urlConstructor.host = baseURL
@@ -137,7 +141,7 @@ class VKNetworkManager {
             URLQueryItem(name: "v", value: "5.130")
         ]
         
-        runGetRequestAF(q: .newsfeed, nil)
+        runGetRequestAF(q: .newsfeed, completion)
         print(self.urlConstructor.url!)
     }
     
@@ -189,8 +193,9 @@ class VKNetworkManager {
                 
                 case .newsfeed:
                     
-                    let json = try JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.allowFragments)
-                    print(json)
+                    let items = try JSONDecoder().decode(NewsfeedResponse.self, from: data).response.items
+                    
+                    self.newsfeedPosts = items
                     
                 }
                 (completion ?? {})()
