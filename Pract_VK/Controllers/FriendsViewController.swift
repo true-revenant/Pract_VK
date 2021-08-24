@@ -153,12 +153,10 @@ class FriendsViewController: UIViewController {
 extension FriendsViewController : UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        print("NUMBER OF SECTIONS CALLED!!")
         return letterSearchControl.letters.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        print("tableView numberOfRowsInSection CALLED!!")
         if friendsBySections[section].isEmpty { return 0 }
         else { return friendsBySections[section].count }
     }

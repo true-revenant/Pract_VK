@@ -165,42 +165,53 @@ class VKNetworkManager {
     }
     
     private func runGetRequestAF(q : qType, _ completion : ( () -> Void)?) {
-        AFSession.request(urlConstructor.url! as URLConvertible, method: .get).responseJSON(completionHandler: { response in
+        
+        let dispGroup = DispatchGroup()
+        
+        DispatchQueue.global().async(group: dispGroup) {
             
-            guard let data = response.data else { return }
-            
-            do {
-                switch q {
-                case .friends:
-                    
-                    let items = try JSONDecoder().decode(FriendsResponse.self, from: data).response.items
-                    try RealmManager.instance.saveToRealm(arr: items)
-                    
-                case .photos:
-                    
-                    let items = try JSONDecoder().decode(PhotoResponse.self, from: data).response.items
-                    try RealmManager.instance.savePhotosToRealm(friendID: RealmManager.instance.currentPhotoOwnerID, phArray: items)
-                    
-                case .groups:
-                    
-                    let items = try JSONDecoder().decode(GroupsResponse.self, from: data).response.items
-                    try RealmManager.instance.saveToRealm(arr: items)
-                    
-                case .searchGroups:
-                    
-                    let items = try JSONDecoder().decode(GroupsResponse.self, from: data).response.items
-                    self.searchGroups = items
+            self.AFSession.request(self.urlConstructor.url! as URLConvertible, method: .get).responseJSON(completionHandler: { response in
                 
-                case .newsfeed:
+                guard let data = response.data else { return }
+                
+                do {
+                    switch q {
+                    case .friends:
+                        
+                        let items = try JSONDecoder().decode(FriendsResponse.self, from: data).response.items
+                        try RealmManager.instance.saveToRealm(arr: items)
+                        
+                    case .photos:
+                        
+                        let items = try JSONDecoder().decode(PhotoResponse.self, from: data).response.items
+                        try RealmManager.instance.savePhotosToRealm(friendID: RealmManager.instance.currentPhotoOwnerID, phArray: items)
+                        
+                    case .groups:
+                        
+                        let items = try JSONDecoder().decode(GroupsResponse.self, from: data).response.items
+                        try RealmManager.instance.saveToRealm(arr: items)
+                        
+                    case .searchGroups:
+                        
+                        let items = try JSONDecoder().decode(GroupsResponse.self, from: data).response.items
+                        self.searchGroups = items
                     
-                    let items = try JSONDecoder().decode(NewsfeedResponse.self, from: data).response.items
-                    
-                    self.newsfeedPosts = items
-                    
+                    case .newsfeed:
+                        
+                        let items = try JSONDecoder().decode(NewsfeedResponse.self, from: data).response.items
+                        
+                        self.newsfeedPosts = items
+                        
+                    }
+                    //(completion ?? {})()
                 }
-                (completion ?? {})()
-            }
-            catch { print(error) }
-        })
+                catch { print(error) }
+            })
+            
+        }
+
+        dispGroup.notify(queue: .main) {
+            (completion ?? {})()
+        }
     }
 }

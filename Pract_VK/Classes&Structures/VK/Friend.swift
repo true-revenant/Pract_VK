@@ -58,11 +58,14 @@ class Friend : Object, Decodable {
         // Определяем корневой контейнер
         let items = try decoder.container(keyedBy: CodingKeys.self)
         
+        
+        
         id = try items.decode(Int.self, forKey: .id)
         firstName = try items.decode(String.self, forKey: .firstName)
         lastName = try items.decode(String.self, forKey: .lastName)
         nickName = try? items.decode(String.self, forKey: .nickName)
         photoAddress = try items.decode(String.self, forKey: .photoAddress)
+        
         
         let cityCont = try? items.nestedContainer(keyedBy: CityKeys.self, forKey: .city)
         city = try? cityCont?.decode(String.self, forKey: .title)

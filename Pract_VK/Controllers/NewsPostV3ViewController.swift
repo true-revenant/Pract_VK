@@ -22,10 +22,19 @@ class NewsPostV3ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         newsCollectionView.register(UINib(nibName: "NewsPostCollectionViewCellV3", bundle: nil), forCellWithReuseIdentifier: reuseCellID)
-        print("NewsPostCollectionViewCellV3 registered!")
+        
         initNewsPosts()
         
-        VKNetworkManager.instance.getNewsfeed()
+        VKNetworkManager.instance.getNewsfeed() { [weak self] in
+            
+            self?.newsCollectionView.reloadData()
+        }
+    }
+    
+    private func initVKNewsfeed() {
+        
+        
+        
     }
     
     private func initNewsPosts() {
@@ -92,6 +101,9 @@ extension NewsPostV3ViewController : UICollectionViewDelegate, UICollectionViewD
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseCellID, for: indexPath) as! NewsPostCollectionViewCellV3
+        
+        
+        
         
         cell.configure(name: "\(posts[indexPath.item].firstName) \(posts[indexPath.item].lastName)", date: posts[indexPath.item].date, postText: posts[indexPath.item].postText, avatarImg: posts[indexPath.item].avatarImage, photoImgs: posts[indexPath.item].photos)
         
