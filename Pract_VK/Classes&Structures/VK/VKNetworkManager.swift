@@ -12,8 +12,10 @@ import RealmSwift
 class VKNetworkManager {
     
     var searchGroups = [Group]()
+    var newsfeedPosts = [Newsfeed]()
     
     private init() {}
+    
     private let baseURL = "api.vk.com"
     private var urlConstructor = URLComponents()
     private var request : URLRequest!
@@ -21,6 +23,7 @@ class VKNetworkManager {
     static let instance = VKNetworkManager()
     
     private enum qType {
+        
         case friends
         case groups
         case photos
@@ -82,6 +85,7 @@ class VKNetworkManager {
         
         //runGetRequest()
         runGetRequestAF(q: .photos, nil)
+        print(self.urlConstructor.url!)
     }
 
     func getGroups(_ completion: @escaping () -> Void) {
@@ -122,7 +126,7 @@ class VKNetworkManager {
     }
     
     // NOT WORKING
-    func getNewsfeed() {
+    func getNewsfeed(_ completion: @escaping () -> Void) {
         
         urlConstructor.scheme = "https"
         urlConstructor.host = baseURL
@@ -137,7 +141,7 @@ class VKNetworkManager {
             URLQueryItem(name: "v", value: "5.130")
         ]
         
-        runGetRequestAF(q: .newsfeed, nil)
+        runGetRequestAF(q: .newsfeed, completion)
         print(self.urlConstructor.url!)
     }
     
@@ -161,41 +165,53 @@ class VKNetworkManager {
     }
     
     private func runGetRequestAF(q : qType, _ completion : ( () -> Void)?) {
-        AFSession.request(urlConstructor.url! as URLConvertible, method: .get).responseJSON(completionHandler: { response in
+        
+        let dispGroup = DispatchGroup()
+        
+        DispatchQueue.global().async(group: dispGroup) {
             
-            guard let data = response.data else { return }
-            
-            do {
-                switch q {
-                case .friends:
-                    
-                    let items = try JSONDecoder().decode(FriendsResponse.self, from: data).response.items
-                    try RealmManager.instance.saveToRealm(arr: items)
-                    
-                case .photos:
-                    
-                    let items = try JSONDecoder().decode(PhotoResponse.self, from: data).response.items
-                    try RealmManager.instance.savePhotosToRealm(friendID: RealmManager.instance.currentPhotoOwnerID, phArray: items)
-                    
-                case .groups:
-                    
-                    let items = try JSONDecoder().decode(GroupsResponse.self, from: data).response.items
-                    try RealmManager.instance.saveToRealm(arr: items)
-                    
-                case .searchGroups:
-                    
-                    let items = try JSONDecoder().decode(GroupsResponse.self, from: data).response.items
-                    self.searchGroups = items
+            self.AFSession.request(self.urlConstructor.url! as URLConvertible, method: .get).responseJSON(completionHandler: { response in
                 
-                case .newsfeed:
+                guard let data = response.data else { return }
+                
+                do {
+                    switch q {
+                    case .friends:
+                        
+                        let items = try JSONDecoder().decode(FriendsResponse.self, from: data).response.items
+                        try RealmManager.instance.saveToRealm(arr: items)
+                        
+                    case .photos:
+                        
+                        let items = try JSONDecoder().decode(PhotoResponse.self, from: data).response.items
+                        try RealmManager.instance.savePhotosToRealm(friendID: RealmManager.instance.currentPhotoOwnerID, phArray: items)
+                        
+                    case .groups:
+                        
+                        let items = try JSONDecoder().decode(GroupsResponse.self, from: data).response.items
+                        try RealmManager.instance.saveToRealm(arr: items)
+                        
+                    case .searchGroups:
+                        
+                        let items = try JSONDecoder().decode(GroupsResponse.self, from: data).response.items
+                        self.searchGroups = items
                     
-                    let json = try JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions.allowFragments)
-                    print(json)
-                    
+                    case .newsfeed:
+                        
+                        let items = try JSONDecoder().decode(NewsfeedResponse.self, from: data).response.items
+                        
+                        self.newsfeedPosts = items
+                        
+                    }
+                    //(completion ?? {})()
                 }
-                (completion ?? {})()
-            }
-            catch { print(error) }
-        })
+                catch { print(error) }
+            })
+            
+        }
+
+        dispGroup.notify(queue: .main) {
+            (completion ?? {})()
+        }
     }
 }

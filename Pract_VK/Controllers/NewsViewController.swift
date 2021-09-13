@@ -22,8 +22,12 @@ class NewsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.register(UINib(nibName: "NewsPostCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: reuseCellID)
+        
         initNewsPosts()
-        VKNetworkManager.instance.getNewsfeed()
+        
+//        VKNetworkManager.instance.getNewsfeed() { [weak self] in
+//            self?.collectionView.reloadData()
+//        }
     }
     
     private func initNewsPosts() {
